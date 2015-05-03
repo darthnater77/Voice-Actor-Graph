@@ -6,6 +6,7 @@ class Node {
   float x, y;
   float dx, dy;
   boolean fixed;
+  boolean highlight;
   String label;
   int count;
 
@@ -62,19 +63,21 @@ class Node {
     stroke(0);
     strokeWeight(0.5);
     
-    ellipse(x, y, 100, 100);
+    ellipse(x, y, 20, 20);
     float w = textWidth(label);
 
-    //if (count > w+2) {
+    if (count > w+2) {
       fill(0);
       textAlign(CENTER, CENTER);
       text(label, x, y);
-    //}
+    }
   }
   
   color decideColor(){
     if (this == selection)
       return selectColor;
+    else if (highlight)
+      return highlightColor;
     else if (fixed)
       return fixedColor;
     else

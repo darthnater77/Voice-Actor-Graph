@@ -6,16 +6,26 @@ class Edge {
   Node to;
   float len;
   int count;
-  String[] games;
+  StringList labels;
 
   Edge(Node from, Node to) {
     this.from = from;
     this.to = to;
-    this.len = 50;
+    this.len = 200;
+    labels = new StringList();
   }
   
-  void increment() {
+  void increment(String label) {
     count++;
+    labels.append(label);
+  }
+  
+  String getLabel(int i){
+    return labels.get(i);
+  }
+  
+  boolean hasLabel(String label){
+    return labels.hasValue(label);
   }
     
   void relax() {
@@ -35,7 +45,7 @@ class Edge {
 
   void draw() {
     stroke(edgeColor);
-    strokeWeight(0.35);
+    strokeWeight(count/4);
     line(from.x, from.y, to.x, to.y);
   }
 }
