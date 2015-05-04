@@ -10,10 +10,10 @@ class Node {
   String label;
   int count;
 
-  Node(String label) {
+  Node(String label, int a, int b) {
     this.label = label;
-    x = random(width);
-    y = random(height);
+    x = a;
+    y = b;
   }
   
   void increment() {
@@ -51,7 +51,7 @@ class Node {
       x += constrain(dx, -5, 5);
       y += constrain(dy, -5, 5);
       
-      x = constrain(x, 0, width);
+      x = constrain(x, 250, width);
       y = constrain(y, 0, height);
     }
     dx /= 2;
@@ -70,8 +70,8 @@ class Node {
     textAlign(CENTER, CENTER);
     if (count > w+2)
       text(label, x, y);
-    else if (dist(mouseX, mouseY, x, y) < count/2)
-      text(label, x, y-count);
+    else if (dist(mouseX, mouseY, x, y) < count/2 || highlight)
+      text(label, x, y - count/2 - 10);
   }
   
   color decideColor(){
