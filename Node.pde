@@ -63,14 +63,15 @@ class Node {
     stroke(0);
     strokeWeight(0.5);
     
-    ellipse(x, y, 20, 20);
+    ellipse(x, y, count, count);
     float w = textWidth(label);
 
-    if (count > w+2) {
-      fill(0);
-      textAlign(CENTER, CENTER);
+    fill(0);
+    textAlign(CENTER, CENTER);
+    if (count > w+2)
       text(label, x, y);
-    }
+    else if (dist(mouseX, mouseY, x, y) < count/2)
+      text(label, x, y-count);
   }
   
   color decideColor(){

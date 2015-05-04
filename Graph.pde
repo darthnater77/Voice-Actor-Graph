@@ -12,15 +12,22 @@ int nodeCount;
 Node[] nodes = new Node[100];
 HashMap nodeTable = new HashMap();
 
+int altNodeCount;
+Node[] altNodes = new Node[100];
+HashMap altNodeTable = new HashMap();
+
 int edgeCount;
 Edge[] edges = new Edge[500];
 
+int altEdgeCount;
+Edge[] altEdges = new Edge[500];
 
-static final color nodeColor   = #F0C070;
+
+static final color nodeColor = #BBBBBB;
 static final color selectColor = #FF3030;
-static final color fixedColor  = #FF8080;
+static final color fixedColor = #FF8080;
 static final color highlightColor = #0000FF;
-static final color edgeColor   = #000000;
+static final color edgeColor = #000000;
 
 PFont font;
 
@@ -218,4 +225,5 @@ void mouseDragged() {
 
 void mouseReleased() {
   selection = null;
+  drawCount = 120;
 }

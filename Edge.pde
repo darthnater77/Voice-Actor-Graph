@@ -7,6 +7,7 @@ class Edge {
   float len;
   int count;
   StringList labels;
+  boolean highlighted;
 
   Edge(Node from, Node to) {
     this.from = from;
@@ -44,8 +45,19 @@ class Edge {
   }
 
   void draw() {
-    stroke(edgeColor);
-    strokeWeight(count/4);
+    if (to.highlight && from.highlight)
+      highlighted = true;
+    else
+      highlighted = false;
+    stroke(decideColor());
+    strokeWeight(count/2);
     line(from.x, from.y, to.x, to.y);
+  }
+  
+  color decideColor(){
+    if (highlighted)
+      return highlightColor;
+    else
+      return edgeColor;
   }
 }
