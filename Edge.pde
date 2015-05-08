@@ -6,36 +6,26 @@ class Edge {
   Node to;
   float len;
   int count;
-  StringList labels;
+  String label;
   boolean highlighted;
 
   Edge(Node from, Node to) {
     this.from = from;
     this.to = to;
-    this.len = 0;
-    labels = new StringList();
+    this.len = 100;
   }
   
   void increment(String label) {
     count++;
-    labels.append(label);
-    len += 150;
+    this.label = label;
   }
   
-  String getLabel(int i){
-    return labels.get(i);
-  }
-  
-  boolean hasLabel(String label){
-    return labels.hasValue(label);
-  }
-    
   void relax() {
     float vx = to.x - from.x;
     float vy = to.y - from.y;
     float d = mag(vx, vy);
     if (d > 0) {
-      float f = (len - d) / (d * 2);
+      float f = (len - d) / (d * 5);
       float dx = f * vx;
       float dy = f * vy;
       to.dx += dx;

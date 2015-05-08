@@ -7,17 +7,24 @@ class Node {
   float dx, dy;
   boolean fixed;
   boolean highlight;
+  boolean type;
   String label;
-  int count;
+  int count, size;
+  int maxSize = 125;
 
-  Node(String label, int a, int b) {
-    this.label = label;
-    x = a;
-    y = b;
+  Node(String label) {
+    String[] hold = split(label, ":");
+    this.label = join(hold, "\n");
+    x = random(200+maxSize, width-maxSize);
+    y = random(maxSize, height-maxSize);
   }
   
   void increment() {
     count++;
+    for (int i = 0; i < edgeCount; i++){
+        if (edges[i].from == this)
+          edges[i].len += 50;
+    }
   }
     
   void relax() {
@@ -30,16 +37,16 @@ class Node {
         float vx = x - n.x;
         float vy = y - n.y;
         float lensq = vx * vx + vy * vy;
-        if (lensq == 0) {
-          ddx += random(1);
-          ddy += random(1);
-        } else if (lensq < 100*100) {
+        if (lensq < size || lensq < n.size) {
+          ddx += random(n.size);
+          ddy += random(n.size);
+        } else {
           ddx += vx / lensq;
           ddy += vy / lensq;
         }
       }
     }
-    float dlen = mag(ddx, ddy) / 2;
+    float dlen = mag(ddx, ddy);
     if (dlen > 0) {
       dx += ddx / dlen;
       dy += ddy / dlen;
@@ -51,11 +58,20 @@ class Node {
       x += constrain(dx, -5, 5);
       y += constrain(dy, -5, 5);
       
-      x = constrain(x, 250, width);
-      y = constrain(y, 0, height);
+      x = constrain(x, 250+size, width-size);
+      y = constrain(y, size, height-size);
     }
     dx /= 2;
     dy /= 2;
+  }
+  
+  void typeCheck(){
+    if (type)
+      size = count*5;
+    else{
+      size = maxSize;
+      
+    }
   }
 
   void draw() {
@@ -63,15 +79,15 @@ class Node {
     stroke(0);
     strokeWeight(0.5);
     
-    ellipse(x, y, count, count);
+    ellipse(x, y, size, size);
     float w = textWidth(label);
 
     fill(0);
     textAlign(CENTER, CENTER);
-    if (count > w+2)
+    if (size > w+2)
       text(label, x, y);
-    else if (dist(mouseX, mouseY, x, y) < count/2 || highlight)
-      text(label, x, y - count/2 - 10);
+    else if (dist(mouseX, mouseY, x, y) < size/2 || highlight)
+      text(label, x, y - size/2 - 10);
   }
   
   color decideColor(){
@@ -81,6 +97,8 @@ class Node {
       return highlightColor;
     else if (fixed)
       return fixedColor;
+    else if (!type)
+      return gameColor;
     else
       return nodeColor;
   }

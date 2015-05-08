@@ -6,34 +6,24 @@ StringList actors;
 StringList games;
 int drawCount;
 boolean highlight;
-int count;
-int nodeX, nodeY;
 
 int nodeCount;
 Node[] nodes = new Node[100];
 HashMap nodeTable = new HashMap();
 
-int altNodeCount;
-Node[] altNodes = new Node[100];
-HashMap altNodeTable = new HashMap();
-
 int edgeCount;
 Edge[] edges = new Edge[500];
-
-int altEdgeCount;
-Edge[] altEdges = new Edge[500];
-
 
 static final color nodeColor = #BBBBBB;
 static final color selectColor = #FF3030;
 static final color fixedColor = #FF8080;
-static final color highlightColor = #9999FF;
+static final color highlightColor = #11FFFF;
+static final color gameColor = #11BB11;
 static final color edgeColor = #000000;
 
 PFont font;
 
 void setup() {
-  count = 0;
   drawCount = 120;
   highlight = false;
   size(1000, 700);  
@@ -50,15 +40,14 @@ void loadData(){
   games = new StringList();
   for (int i = 0; i < lines.length; i++)
     readParseURL(lines[i]);
+  for (int i = 0; i < nodeCount; i++)
+    nodes[i].typeCheck();
 }
 
 void readParseURL(String url){
   actors.clear();
   String edgeLabel;
   int idx, idx2;
-  
-  nodeX = (int) random(width);
-  nodeY = (int) random(height);
   
   reader = createReader(url);
   String line = "";
@@ -88,19 +77,18 @@ void readParseURL(String url){
   }
   
   for (int i = 0; i < actors.size()-1; i++){
-    for (int j = i+1; j < actors.size(); j++){
-      addEdge(actors.get(i), actors.get(j), edgeLabel, nodeX, nodeY);
-    }
+    addEdge(actors.get(i), edgeLabel, edgeLabel);
   }    
 }
 
 
-void addEdge(String fromLabel, String toLabel, String edgeLabel, int x, int y) {
-
-  Node from = findNode(fromLabel, x, y);
-  Node to = findNode(toLabel, x, y);
+void addEdge(String fromLabel, String toLabel, String edgeLabel) {
+  Node from = findNode(fromLabel);
+  Node to = findNode(toLabel);
   from.increment();
+  from.type = false;
   to.increment();
+  from.type = true;
   
   for (int i = 0; i < edgeCount; i++) {
     if (edges[i].from == from && edges[i].to == to) {
@@ -117,17 +105,18 @@ void addEdge(String fromLabel, String toLabel, String edgeLabel, int x, int y) {
   edges[edgeCount++] = e;
 }
 
-Node findNode(String label, int x, int y) {
+
+Node findNode(String label) {
   Node n = (Node) nodeTable.get(label);
   if (n == null) {
-    return addNode(label, x, y);
+    return addNode(label);
   }
   return n;
 }
 
 
-Node addNode(String label, int x, int y) {
-  Node n = new Node(label, x, y);  
+Node addNode(String label) {
+  Node n = new Node(label);  
   if (nodeCount == nodes.length) {
     nodes = (Node[]) expand(nodes);
   }
@@ -142,20 +131,16 @@ void draw() {
     beginRecord(PDF, "output.pdf");
   } 
   background(255);
-
-  if (drawCount > 0){
-    for (int i = 0; i < edgeCount; i++) {
-      edges[i].relax();
-    }
-    for (int i = 0; i < nodeCount; i++) {
-      nodes[i].relax();
-    }
-    for (int i = 0; i < nodeCount; i++) {
-      nodes[i].update();
-    }
-    drawCount--;
+  for (int i = 0; i < edgeCount; i++) {
+    edges[i].relax();
   }
-  
+  for (int i = 0; i < nodeCount; i++) {
+    nodes[i].relax();
+  }
+  for (int i = 0; i < nodeCount; i++) {
+    nodes[i].update();
+  }
+  drawCount--; 
   for (int i = 0; i < edgeCount; i++) {
     edges[i].draw();
   }
@@ -177,21 +162,24 @@ void draw() {
 }
 
 void drawList(){
-  fill(0);
-  textAlign(LEFT);
+  noStroke();
+  fill(200);
+  rect(0, 0, 250, height);
   int step = 20;
   int start = height/2 - games.size()/2*step;
+  textAlign(LEFT);
   for (int i = 0; i < games.size(); i++){
     if (mouseX > 0 && mouseX < 250 && mouseY > start+(i-1)*step && mouseY < start+i*step){
       fill(highlightColor);
-      text(games.get(i), 20, start + i*step);
       highlight(games.get(i));
     }
     else{
       fill(0);
-      text(games.get(i), 10, start + i*step);
     }
+    text(games.get(i), 10, start + i*step);
   }
+  if (mouseX > 250)
+    highlight("");
 }
 
 void highlight(String selected){
@@ -199,7 +187,7 @@ void highlight(String selected){
     nodes[i].highlight = false;
   }
   for (int i = 0; i < edgeCount; i++){
-    if (edges[i].hasLabel(selected)){
+    if (edges[i].label == selected){
       edges[i].to.highlight = true;
       edges[i].from.highlight = true;
     }
@@ -212,12 +200,6 @@ boolean record;
 void keyPressed(){
   if (key == 'r'){
     record = true;
-  }
-  if (key == ' '){
-    highlight(games.get(count));
-    count++;
-    if (count > games.size())
-      count = 0;
   }
 }
 
