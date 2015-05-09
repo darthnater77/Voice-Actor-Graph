@@ -1,20 +1,20 @@
 // Code from Visualizing Data, First Edition, Copyright 2008 Ben Fry.
 // Based on the GraphLayout example by Sun Microsystems.
 
-
 class Node {
   float x, y;
   float dx, dy;
   boolean fixed;
   boolean highlight;
   boolean type;
-  String label;
+  String label, printLabel;
   int count, size;
   int maxSize = 125;
 
   Node(String label) {
     String[] hold = split(label, ":");
-    this.label = join(hold, "\n");
+    printLabel = join(hold, "\n");
+    this.label = label;
     x = random(200+maxSize, width-maxSize);
     y = random(maxSize, height-maxSize);
   }
@@ -54,8 +54,8 @@ class Node {
       x += constrain(dx, -5, 5);
       y += constrain(dy, -5, 5);
       
-      x = constrain(x, 250+size/2, width-size/2);
-      y = constrain(y, size/2, height-size/2);
+      x = constrain(x, 200+size/1.5, width-size/1.5);
+      y = constrain(y, size/1.5, height-size/1.5);
     }
     dx /= 2;
     dy /= 2;
@@ -76,14 +76,29 @@ class Node {
     strokeWeight(0.5);
     
     ellipse(x, y, size, size);
-    float w = textWidth(label);
+    float w = textWidth(printLabel);
 
     fill(0);
     textAlign(CENTER, CENTER);
     if (size > w+2)
-      text(label, x, y);
-    else if (dist(mouseX, mouseY, x, y) < size/2 || highlight){
-      text(label, x, y - size/2 - 10);
+      text(printLabel, x, y);
+    else if (highlight)
+      text(printLabel, x, y - size/2 - 10);
+    checkHighlight(false);
+  }
+  
+  void checkHighlight(boolean check){
+    if(dist(mouseX, mouseY, x, y) < size/2 || check){
+      for(int i = 0; i < edgeCount; i++){
+        if (edges[i].to == this || edges[i].from == this){
+          edges[i].to.highlight = true;
+          edges[i].from.highlight = true;
+        }
+      }
+    }
+    else{
+      highlight = false;
+    }
   }
   
   color decideColor(){

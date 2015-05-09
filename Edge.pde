@@ -5,8 +5,6 @@ class Edge {
   Node from;
   Node to;
   float len;
-  String label;
-  boolean highlighted;
 
   Edge(Node from, Node to) {
     this.from = from;
@@ -20,10 +18,6 @@ class Edge {
     }
     else
       this.len = 85;
-  }
-  
-  void increment(String label){
-    this.label = label;
   }
   
   void relax() {
@@ -42,19 +36,8 @@ class Edge {
   }
 
   void draw() {
-    if (to.highlight && from.highlight)
-      highlighted = true;
-    else
-      highlighted = false;
-    stroke(decideColor());
+    stroke(edgeColor);
     strokeWeight(.5);
     line(from.x, from.y, to.x, to.y);
-  }
-  
-  color decideColor(){
-    if (highlighted)
-      return highlightColor;
-    else
-      return edgeColor;
   }
 }

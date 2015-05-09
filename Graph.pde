@@ -26,7 +26,7 @@ PFont font;
 
 void setup() {
   highlight = false;
-  size(1400, 700);  
+  size(1200, 700);  
   loadData();
   println(edgeCount);
   font = createFont("SansSerif", 10);
@@ -42,6 +42,7 @@ void loadData(){
     readParseURL(lines[i]);
   for (int i = 0; i < nodeCount; i++)
     nodes[i].typeCheck();
+  games.sort();
 }
 
 void readParseURL(String url){
@@ -77,12 +78,12 @@ void readParseURL(String url){
   }
   
   for (int i = 0; i < actors.size()-1; i++){
-    addEdge(actors.get(i), edgeLabel, edgeLabel);
+    addEdge(actors.get(i), edgeLabel);
   }    
 }
 
 
-void addEdge(String fromLabel, String toLabel, String edgeLabel) {
+void addEdge(String fromLabel, String toLabel) {
   Node from = findNode(fromLabel);
   Node to = findNode(toLabel);
   from.increment();
@@ -90,15 +91,7 @@ void addEdge(String fromLabel, String toLabel, String edgeLabel) {
   to.increment();
   from.type = true;
   
-  for (int i = 0; i < edgeCount; i++) {
-    if (edges[i].from == from && edges[i].to == to) {
-      edges[i].increment(edgeLabel);
-      return;
-    }
-  } 
-  
   Edge e = new Edge(from, to);
-  e.increment(edgeLabel);
   if (edgeCount == edges.length) {
     edges = (Edge[]) expand(edges);
   }
@@ -163,47 +156,34 @@ void draw() {
 void drawList(){
   noStroke();
   fill(200);
-  rect(0, 0, 250, height);
+  rect(0, 0, 200, height);
   int step = 20;
   int start = height/2 - games.size()/2*step;
   textAlign(LEFT);
   for (int i = 0; i < games.size(); i++){
     if (mouseX > 0 && mouseX < 250 && mouseY > start+(i-1)*step && mouseY < start+i*step){
       fill(textHighlight);
-      highlight(games.get(i));
+      for (int j = 0; j < nodeCount; j++){
+        if (games.get(i).equals(nodes[j].label)){
+          nodes[j].checkHighlight(true);
+        }
+      }
     }
     else{
       fill(0);
     }
     text(games.get(i), 10, start + i*step);
   }
-  if (mouseX > 250 || mouseY > start*games.size()|| mouseY < start-step)
-    highlight("");
 }
-
-void highlight(String selected){
-  for (int i = 0; i < nodeCount; i++){
-    nodes[i].highlight = false;
-  }
-  for (int i = 0; i < edgeCount; i++){
-    if (edges[i].label == selected){
-      edges[i].to.highlight = true;
-      edges[i].from.highlight = true;
-    }
-  }
-}
-
 
 boolean record;
 
 void keyPressed(){
-  if (key == 'r'){
+  if (key == 'r')
     record = true;
-  }
 }
 
-
-Node selection; 
+Node selection;
 
 void mousePressed(){
   // Ignore anything greater than this distance
