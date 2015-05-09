@@ -4,7 +4,6 @@
 BufferedReader reader;
 StringList actors;
 StringList games;
-int drawCount;
 boolean highlight;
 
 int nodeCount;
@@ -14,19 +13,20 @@ HashMap nodeTable = new HashMap();
 int edgeCount;
 Edge[] edges = new Edge[500];
 
-static final color nodeColor = #BBBBBB;
-static final color selectColor = #FF3030;
-static final color fixedColor = #FF8080;
+static final color nodeColor = #5699FF;
+static final color selectColor = #A9FF00;
+static final color fixedColor = #333333;
 static final color highlightColor = #11FFFF;
-static final color gameColor = #11BB11;
+static final color gameColor = #1BB200;
+static final color gameFixed = #71FF58;
 static final color edgeColor = #000000;
+static final color textHighlight = #C64DFF;
 
 PFont font;
 
 void setup() {
-  drawCount = 120;
   highlight = false;
-  size(1000, 700);  
+  size(1400, 700);  
   loadData();
   println(edgeCount);
   font = createFont("SansSerif", 10);
@@ -140,7 +140,6 @@ void draw() {
   for (int i = 0; i < nodeCount; i++) {
     nodes[i].update();
   }
-  drawCount--; 
   for (int i = 0; i < edgeCount; i++) {
     edges[i].draw();
   }
@@ -170,7 +169,7 @@ void drawList(){
   textAlign(LEFT);
   for (int i = 0; i < games.size(); i++){
     if (mouseX > 0 && mouseX < 250 && mouseY > start+(i-1)*step && mouseY < start+i*step){
-      fill(highlightColor);
+      fill(textHighlight);
       highlight(games.get(i));
     }
     else{
@@ -178,7 +177,7 @@ void drawList(){
     }
     text(games.get(i), 10, start + i*step);
   }
-  if (mouseX > 250)
+  if (mouseX > 250 || mouseY > start*games.size()|| mouseY < start-step)
     highlight("");
 }
 
@@ -246,5 +245,4 @@ void mouseDragged() {
 
 void mouseReleased() {
   selection = null;
-  drawCount = 120;
 }

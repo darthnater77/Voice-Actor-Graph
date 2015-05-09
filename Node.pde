@@ -21,10 +21,6 @@ class Node {
   
   void increment() {
     count++;
-    for (int i = 0; i < edgeCount; i++){
-        if (edges[i].from == this)
-          edges[i].len += 50;
-    }
   }
     
   void relax() {
@@ -38,8 +34,8 @@ class Node {
         float vy = y - n.y;
         float lensq = vx * vx + vy * vy;
         if (lensq < size || lensq < n.size) {
-          ddx += random(n.size);
-          ddy += random(n.size);
+          ddx += random(5*n.size);
+          ddy += random(5*n.size);
         } else {
           ddx += vx / lensq;
           ddy += vy / lensq;
@@ -58,8 +54,8 @@ class Node {
       x += constrain(dx, -5, 5);
       y += constrain(dy, -5, 5);
       
-      x = constrain(x, 250+size, width-size);
-      y = constrain(y, size, height-size);
+      x = constrain(x, 250+size/2, width-size/2);
+      y = constrain(y, size/2, height-size/2);
     }
     dx /= 2;
     dy /= 2;
@@ -86,7 +82,7 @@ class Node {
     textAlign(CENTER, CENTER);
     if (size > w+2)
       text(label, x, y);
-    else if (dist(mouseX, mouseY, x, y) < size/2 || highlight)
+    else if (dist(mouseX, mouseY, x, y) < size/2 || highlight){
       text(label, x, y - size/2 - 10);
   }
   
@@ -95,10 +91,13 @@ class Node {
       return selectColor;
     else if (highlight)
       return highlightColor;
+    else if (!type)
+      if (fixed)
+        return gameFixed;
+      else
+        return gameColor;
     else if (fixed)
       return fixedColor;
-    else if (!type)
-      return gameColor;
     else
       return nodeColor;
   }

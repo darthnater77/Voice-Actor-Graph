@@ -5,18 +5,24 @@ class Edge {
   Node from;
   Node to;
   float len;
-  int count;
   String label;
   boolean highlighted;
 
   Edge(Node from, Node to) {
     this.from = from;
-    this.to = to;
-    this.len = 100;
+    this.to = to;  
+    if (this.from.count > 1){
+      for (int i = 0; i < edgeCount; i++){
+        if (edges[i].from == this.from)
+          edges[i].len = 85 + (this.from.count-1)*20;
+      }
+      len = 85 + (this.from.count-1)*20;
+    }
+    else
+      this.len = 85;
   }
   
-  void increment(String label) {
-    count++;
+  void increment(String label){
     this.label = label;
   }
   
@@ -25,7 +31,7 @@ class Edge {
     float vy = to.y - from.y;
     float d = mag(vx, vy);
     if (d > 0) {
-      float f = (len - d) / (d * 5);
+      float f = (len - d) / (d * 10);
       float dx = f * vx;
       float dy = f * vy;
       to.dx += dx;
@@ -41,7 +47,7 @@ class Edge {
     else
       highlighted = false;
     stroke(decideColor());
-    strokeWeight(count/2);
+    strokeWeight(.5);
     line(from.x, from.y, to.x, to.y);
   }
   
